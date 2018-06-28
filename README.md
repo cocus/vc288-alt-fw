@@ -1,5 +1,5 @@
 # vc288-alt-fw
-VC288 Volt-amp meter alternative firware. Targets the cheap DSN-VC288 volt-amp meter that uses the STM8S003F MCU.
+VC288 Volt-amp meter alternative firmware. Targets the cheap DSN-VC288 volt-amp meter that uses the STM8S003F MCU.
 
 # How to compile
 You'll need IAR Embedded Workbench for STM8. It's free, you only need to register in their site with your email.
@@ -14,4 +14,5 @@ This is still not fully fledged as the original.
 * Linearize the ADC readings to get a precise value out of it.
 * Store the ADC offset calibrations in the EEPROM.
 * Move the decimal point dynamically.
+* Support the STM8S103F MCU (other variants of the same voltmeter).
 * ... other stuff that will come out eventually.
