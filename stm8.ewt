@@ -2113,6 +2113,12 @@
         <name>$PROJ_DIR$\config.h</name>
     </file>
     <file>
+        <name>$PROJ_DIR$\display_7seg.c</name>
+    </file>
+    <file>
+        <name>$PROJ_DIR$\display_7seg.h</name>
+    </file>
+    <file>
         <name>$PROJ_DIR$\gpio.c</name>
     </file>
     <file>

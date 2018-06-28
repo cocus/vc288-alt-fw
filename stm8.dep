@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>2</fileVersion>
-    <fileChecksum>2452786492</fileChecksum>
+    <fileChecksum>482734846</fileChecksum>
     <configuration>
         <name>Debug</name>
         <outputs>
@@ -43,6 +43,11 @@
             <file>$PROJ_DIR$\clock.c</file>
             <file>$PROJ_DIR$\gpio.c</file>
             <file>$PROJ_DIR$\timer.c</file>
+            <file>$PROJ_DIR$\display_7seg.h</file>
+            <file>$PROJ_DIR$\README.md</file>
+            <file>$PROJ_DIR$\display_7seg.c</file>
+            <file>$PROJ_DIR$\Debug\Obj\display_7seg.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\display_7seg.pbi</file>
         </outputs>
         <file>
             <name>$PROJ_DIR$\Debug\Exe\stm8.out</name>
@@ -55,7 +60,7 @@
             <inputs>
                 <tool>
                     <name>ILINK</name>
-                    <file> 27 23 16 12 7 20 31 6</file>
+                    <file> 27 23 16 41 12 7 20 31 6</file>
                 </tool>
             </inputs>
         </file>
@@ -74,11 +79,11 @@
             <inputs>
                 <tool>
                     <name>ICCSTM8</name>
-                    <file> 24 0 11 28</file>
+                    <file> 24 0 11 28 3 10 13 22 18 8 21 5</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 11 0 24 28</file>
+                    <file> 0 13 11 10 21 5 28 24 3 22 18 8</file>
                 </tool>
             </inputs>
         </file>
@@ -101,11 +106,11 @@
             <inputs>
                 <tool>
                     <name>ICCSTM8</name>
-                    <file> 2 3 10 13 22 18 8 21 5 24 0 11 34 15 28 26</file>
+                    <file> 2 24 0 11 34 3 10 13 22 18 8 21 5 15 28 26 38</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 10 15 18 0 24 26 21 8 11 3 34 28 13 22 5 2</file>
+                    <file> 13 28 0 34 38 3 5 24 15 26 11 22 2 10 21 18 8</file>
                 </tool>
             </inputs>
         </file>
@@ -128,7 +133,7 @@
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 13 3 10 21 5 34 0 11 24 22 18 8</file>
+                    <file> 0 3 11 10 21 8 34 18 24 13 22 5</file>
                 </tool>
             </inputs>
         </file>
@@ -151,7 +156,7 @@
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 3 0 10 21 8 11 18 26 13 22 5 24</file>
+                    <file> 3 10 21 5 26 0 11 13 24 22 18 8</file>
                 </tool>
             </inputs>
         </file>
@@ -186,6 +191,29 @@
                     <file> 9 32</file>
                 </tool>
             </outputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\display_7seg.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCSTM8</name>
+                    <file> 41</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 42</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICCSTM8</name>
+                    <file> 24 0 11 26 3 10 13 22 18 8 21 5 15 38</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 0 13 11 10 21 5 26 24 15 3 22 18 8 38</file>
+                </tool>
+            </inputs>
         </file>
     </configuration>
     <configuration>
