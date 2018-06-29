@@ -25,7 +25,7 @@ void setup_gpios(void)
     PC_DDR_DDR3 = 1; /* PC3 = out */
     PC_CR1_C13 = 1;  /* push pull */
     PC_CR2_C23 = 0;  /* speed 2MHz*/
-    
+
     /* D */
     PC_DDR_DDR6 = 1; /* PC6 = out */
     PC_CR1_C16 = 1;  /* push pull */
@@ -54,7 +54,7 @@ void setup_gpios(void)
     /**
      * First row of LEDs (common anodes)
      * (by default, every LED digit is off)
-     */   
+     */
     PD_DDR_DDR5 = 1; /* PD5 = out */
     PD_CR1_C15 = 1;  /* push pull */
     PD_CR2_C25 = 0;  /* speed 2MHz*/
@@ -66,7 +66,7 @@ void setup_gpios(void)
     /**
      * Second row of LEDs (common anodes)
      * (by default, every LED digit is off)
-     */    
+     */
     PB_DDR_DDR4 = 1; /* PB4 = out */
     PB_CR1_C14 = 1;  /* push pull */
     PB_CR2_C24 = 0;  /* speed 2MHz*/
@@ -74,7 +74,7 @@ void setup_gpios(void)
     PA_DDR_DDR1 = 1; /* PA1 = out */
     PA_CR1_C11 = 1;  /* push pull */
     PA_CR2_C21 = 0;  /* speed 2MHz*/
-    
+
     PB_DDR_DDR5 = 1; /* PB5 = out */
     PB_CR1_C15 = 1;  /* push pull */
     PB_CR2_C25 = 0;  /* speed 2MHz*/
@@ -82,7 +82,7 @@ void setup_gpios(void)
 
 uint8_t read_programming_pin(void)
 {
-    return PD_IDR_IDR6;
+    return PD_IDR_IDR6 == 0;
 }
 
 void programming_pin_control(uint8_t is_input)
@@ -115,7 +115,7 @@ void set_segments(uint8_t data)
 #else
     data >>= 1;
 #endif
-    
+
     PC_ODR_ODR5 = data & 1; data >>= 1;     // Dp
 }
 
@@ -124,7 +124,7 @@ void select_digit(uint8_t digit)
     PD_ODR_ODR4 = digit != 0;
     PD_ODR_ODR6 = digit != 1;
     PD_ODR_ODR5 = digit != 2;
-   
+
     PB_ODR_ODR5 = digit != 3;
     PB_ODR_ODR4 = digit != 4;
     PA_ODR_ODR1 = digit != 5;

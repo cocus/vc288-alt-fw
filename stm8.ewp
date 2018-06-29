@@ -1625,6 +1625,12 @@
         <name>$PROJ_DIR$\display_7seg.h</name>
     </file>
     <file>
+        <name>$PROJ_DIR$\eeprom.c</name>
+    </file>
+    <file>
+        <name>$PROJ_DIR$\eeprom.h</name>
+    </file>
+    <file>
         <name>$PROJ_DIR$\gpio.c</name>
     </file>
     <file>

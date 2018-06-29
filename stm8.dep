@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <fileVersion>2</fileVersion>
-    <fileChecksum>482734846</fileChecksum>
+    <fileChecksum>1428517352</fileChecksum>
     <configuration>
         <name>Debug</name>
         <outputs>
@@ -45,9 +45,15 @@
             <file>$PROJ_DIR$\timer.c</file>
             <file>$PROJ_DIR$\display_7seg.h</file>
             <file>$PROJ_DIR$\README.md</file>
+            <file>$PROJ_DIR$\eeprom.c</file>
+            <file>$PROJ_DIR$\Debug\Obj\eeprom.o</file>
+            <file>$PROJ_DIR$\Debug\Obj\eeprom.pbi</file>
+            <file>$PROJ_DIR$\eeprom.h</file>
             <file>$PROJ_DIR$\display_7seg.c</file>
             <file>$PROJ_DIR$\Debug\Obj\display_7seg.o</file>
             <file>$PROJ_DIR$\Debug\Obj\display_7seg.pbi</file>
+            <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
+            <file>$TOOLKIT_DIR$\inc\c\string.h</file>
         </outputs>
         <file>
             <name>$PROJ_DIR$\Debug\Exe\stm8.out</name>
@@ -60,7 +66,7 @@
             <inputs>
                 <tool>
                     <name>ILINK</name>
-                    <file> 27 23 16 41 12 7 20 31 6</file>
+                    <file> 27 23 16 45 41 12 7 20 31 6</file>
                 </tool>
             </inputs>
         </file>
@@ -79,11 +85,11 @@
             <inputs>
                 <tool>
                     <name>ICCSTM8</name>
-                    <file> 24 0 11 28 3 10 13 22 18 8 21 5</file>
+                    <file> 24 3 10 13 22 18 8 21 5 0 11 28</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 0 13 11 10 21 5 28 24 3 22 18 8</file>
+                    <file> 13 3 18 22 8 10 0 21 5 11 24 28</file>
                 </tool>
             </inputs>
         </file>
@@ -106,11 +112,11 @@
             <inputs>
                 <tool>
                     <name>ICCSTM8</name>
-                    <file> 2 24 0 11 34 3 10 13 22 18 8 21 5 15 28 26 38</file>
+                    <file> 2 24 3 10 13 22 18 8 21 5 0 11 34 15 28 26 38 43</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 13 28 0 34 38 3 5 24 15 26 11 22 2 10 21 18 8</file>
+                    <file> 3 28 10 21 8 34 38 18 11 24 15 26 43 0 13 22 5 2</file>
                 </tool>
             </inputs>
         </file>
@@ -129,11 +135,11 @@
             <inputs>
                 <tool>
                     <name>ICCSTM8</name>
-                    <file> 24 0 11 34 3 10 13 22 18 8 21 5</file>
+                    <file> 24 3 10 13 22 18 8 21 5 0 11 34</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 0 3 11 10 21 8 34 18 24 13 22 5</file>
+                    <file> 10 3 5 34 0 13 22 24 21 18 8 11</file>
                 </tool>
             </inputs>
         </file>
@@ -152,11 +158,11 @@
             <inputs>
                 <tool>
                     <name>ICCSTM8</name>
-                    <file> 24 0 11 26 3 10 13 22 18 8 21 5</file>
+                    <file> 24 3 10 13 22 18 8 21 5 0 11 26</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 3 10 21 5 26 0 11 13 24 22 18 8</file>
+                    <file> 10 21 5 3 13 11 26 0 22 18 8 24</file>
                 </tool>
             </inputs>
         </file>
@@ -175,11 +181,11 @@
             <inputs>
                 <tool>
                     <name>ICCSTM8</name>
-                    <file> 24 0 11 15</file>
+                    <file> 24 3 10 13 22 18 8 21 5 0 11 15</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 11 0 24 15</file>
+                    <file> 13 3 18 22 8 10 0 21 5 11 24 15</file>
                 </tool>
             </inputs>
         </file>
@@ -193,7 +199,7 @@
             </outputs>
         </file>
         <file>
-            <name>$PROJ_DIR$\display_7seg.c</name>
+            <name>$PROJ_DIR$\eeprom.c</name>
             <outputs>
                 <tool>
                     <name>ICCSTM8</name>
@@ -207,11 +213,34 @@
             <inputs>
                 <tool>
                     <name>ICCSTM8</name>
-                    <file> 24 0 11 26 3 10 13 22 18 8 21 5 15 38</file>
+                    <file> 24 3 10 13 22 18 8 21 5 0 11 43 48 47</file>
                 </tool>
                 <tool>
                     <name>BICOMP</name>
-                    <file> 0 13 11 10 21 5 26 24 15 3 22 18 8 38</file>
+                    <file> 10 18 11 3 21 8 43 48 0 13 22 5 47 24</file>
+                </tool>
+            </inputs>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\display_7seg.c</name>
+            <outputs>
+                <tool>
+                    <name>ICCSTM8</name>
+                    <file> 45</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 46</file>
+                </tool>
+            </outputs>
+            <inputs>
+                <tool>
+                    <name>ICCSTM8</name>
+                    <file> 24 3 10 13 22 18 8 21 5 0 11 26 15 38</file>
+                </tool>
+                <tool>
+                    <name>BICOMP</name>
+                    <file> 13 3 18 22 8 10 0 21 5 11 24 26 15 38</file>
                 </tool>
             </inputs>
         </file>
