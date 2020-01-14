@@ -4,7 +4,19 @@
 #include "config.h"
 #include <stdint.h>
 
-eeprom_settings_t * eeprom_get_settings(void);
+typedef struct
+{
+    uint16_t                            offset;
+    double                              scaling;
+} adc_calibration_values_t;
+
+typedef struct
+{
+    adc_calibration_values_t            adc_amps;
+    adc_calibration_values_t            adc_volts;
+} eeprom_settings_t;
+
+const eeprom_settings_t * eeprom_get_settings(void);
 
 int8_t eeprom_load_settings(void);
 

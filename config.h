@@ -14,29 +14,10 @@
  */
 #define ADC_AVERAGE_SAMPLES_BASE_2      5
 
-#include <stdint.h>
-
-typedef struct
-{
-    uint16_t                            offset;
-    float                               scaling;
-} adc_calibration_values_t;
-
-typedef struct
-{
-    adc_calibration_values_t            adc_amps;
-    adc_calibration_values_t            adc_volts;
-} eeprom_settings_t;
-
-
-
-#include <iostm8s003f3.h>
-
-#define EEPROM_START_PTR                0x4000
-
-#define HSI_RC_CLOCK_SPEED              16000000UL
-#define DEFAULT_SYSTEM_CORE_CLOCK       2000000UL
-
-#define GAIN_FOR_VOLTAGE                (((8200.0f + 290000.0f) / 8200.0f) * 33.0f / 1024.0f)
+#ifdef STM8S003
+#include "config_8s003.h"
+#else
+#error "No suitable processor selected"
+#endif
 
 #endif /* __CONFIG_H */

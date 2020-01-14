@@ -55,7 +55,7 @@ uint16_t crc16(char *data_p, uint16_t length)
     return (crc);
 }
 
-eeprom_settings_t * eeprom_get_settings(void)
+const eeprom_settings_t * eeprom_get_settings(void)
 {
     return &eeprom_contents.settings;
 }

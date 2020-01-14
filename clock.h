@@ -31,8 +31,8 @@ typedef enum
     CORE_15k625Hz       = STM8S_HSI_DIV_8 | STM8S_CPU_DIV_128,  /* (HSI / 8) / 128 */
 } stm8s_core_clocks;
 
-uint32_t clock_get_f_master(void);
-uint32_t clock_get_f_cpu(void);
+const uint32_t clock_get_f_master(void);
+const uint32_t clock_get_f_cpu(void);
 
 void setup_clock(stm8s_core_clocks speed);
 void delay(uint32_t n);
