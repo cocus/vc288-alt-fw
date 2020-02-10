@@ -265,7 +265,7 @@
                 </option>
                 <option>
                     <name>DynDriver</name>
-                    <state>SIMULATOR_STM8</state>
+                    <state>STLINK_STM8</state>
                 </option>
                 <option>
                     <name>CSpyDDFOverride</name>
@@ -273,7 +273,7 @@
                 </option>
                 <option>
                     <name>CSpyDDFFile</name>
-                    <state></state>
+                    <state>$TOOLKIT_DIR$\config\ddf\iostm8.ddf</state>
                 </option>
                 <option>
                     <name>CSpyEnableExtraOptions</name>

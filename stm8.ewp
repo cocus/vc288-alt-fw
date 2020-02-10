@@ -1652,6 +1652,9 @@
         <name>$PROJ_DIR$\config.h</name>
     </file>
     <file>
+        <name>$PROJ_DIR$\config_8s003.h</name>
+    </file>
+    <file>
         <name>$PROJ_DIR$\display_7seg.c</name>
     </file>
     <file>
@@ -1664,10 +1667,10 @@
         <name>$PROJ_DIR$\eeprom.h</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\gpio.c</name>
+        <name>$PROJ_DIR$\gpio.h</name>
     </file>
     <file>
-        <name>$PROJ_DIR$\gpio.h</name>
+        <name>$PROJ_DIR$\gpio_8s003.c</name>
     </file>
     <file>
         <name>$PROJ_DIR$\main.c</name>
