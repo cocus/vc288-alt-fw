@@ -13,12 +13,12 @@ void setup_timer1(void)
     TIM1_CR1_DIR = 0;                   //  Up counter.
     TIM1_CR1_CMS = 0;                   //  Edge aligned counter.
     TIM1_CR2_MMS = 0x02;                //  Update event selected as trigger out.
-    
+
     TIM1_RCR = 0;                       //  No repetition.
-    
+
     TIM1_PSCRH = 0;                     //  Prescaler = 4
     TIM1_PSCRL = 3;
-    
+
     TIM1_ARRH = 0x9c;                   //  High byte of 40,000.
     TIM1_ARRL = 0x40;                   //  Low byte of 40,000.
 

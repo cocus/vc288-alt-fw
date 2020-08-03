@@ -29,19 +29,19 @@ void setup_clock(stm8s_core_clocks speed)
     CLK_SWCR_SWEN = 1;                  //  Enable switching.
 
     while (CLK_SWCR_SWBSY != 0);        //  Pause while the clock switch is busy.
-    
+
     /* CLK_CKDIVR[4:3] sets the HSI prescaler (1, 2, 4, 8) */
-    f_master = HSI_RC_CLOCK_SPEED >> ((speed & 0x18) >> 3);   
+    f_master = HSI_RC_CLOCK_SPEED >> ((speed & 0x18) >> 3);
     /* CLK_CKDIVR[2:0] sets the CPU prescaler (1, 2, ... , 128) */
     f_CPU = f_master >> (speed & 0x07);
 }
 
-uint32_t clock_get_f_master(void)
+const uint32_t clock_get_f_master(void)
 {
     return f_master;
 }
 
-uint32_t clock_get_f_cpu(void)
+const uint32_t clock_get_f_cpu(void)
 {
     return f_CPU;
 }

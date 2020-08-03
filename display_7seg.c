@@ -32,11 +32,19 @@ __interrupt void TIM2_UPD_OVF_IRQHandler(void)
 }
 
 void set_display_from_int(uint16_t number, 
-                          uint8_t row)
+                          uint8_t row,
+                          uint8_t decimal_dots,
+                          uint8_t digits)
 {
-    display_data[row+2] = seven_seg_lut[number % 10];
+    // Note: 8th bit controls the decimal place dot
+    display_data[row+2] = (digits & 1 ? seven_seg_lut[number % 10] : 0) |
+                          (decimal_dots & 1 ? 0x80 : 0);
     number /= 10;
-    display_data[row+1] = seven_seg_lut[number % 10];
+    decimal_dots >>= 1;
+    display_data[row+1] = (digits & 1 ? seven_seg_lut[number % 10] : 0) |
+                          (decimal_dots & 1 ? 0x80 : 0);
     number /= 10;
-    display_data[row+0] = seven_seg_lut[number % 10];
+    decimal_dots >>= 1;
+    display_data[row+0] = (digits & 1 ? seven_seg_lut[number % 10] : 0) |
+                          (decimal_dots & 1 ? 0x80 : 0);
 }

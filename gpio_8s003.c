@@ -52,8 +52,7 @@ void setup_gpios(void)
     PC_CR2_C25 = 0;  /* speed 2MHz*/
 
     /**
-     * First row of LEDs (common anodes)
-     * (by default, every LED digit is off)
+     * First row of LEDs (common anodes/cathodes)
      */
     PD_DDR_DDR5 = 1; /* PD5 = out */
     PD_CR1_C15 = 1;  /* push pull */
@@ -63,9 +62,10 @@ void setup_gpios(void)
     PD_CR1_C14 = 1;  /* push pull */
     PD_CR2_C24 = 0;  /* speed 2MHz*/
 
+    /* PD6 needs to be controlled with programming_pin_control() */
+    
     /**
-     * Second row of LEDs (common anodes)
-     * (by default, every LED digit is off)
+     * Second row of LEDs (common anodes/cathodes)
      */
     PB_DDR_DDR4 = 1; /* PB4 = out */
     PB_CR1_C14 = 1;  /* push pull */
