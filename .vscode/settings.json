@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "stm8s.h": "c",
+        "config.h": "c",
+        "timer.h": "c",
+        "stm8.h": "c",
+        "display_7seg.h": "c",
+        "config_8s003.h": "c"
+    }
+}
