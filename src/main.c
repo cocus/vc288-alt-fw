@@ -182,6 +182,7 @@ static void do_measure(void)
     value = get_adc_volts();
     /* Offset */
     value -= settings->adc_volts.offset;
+    if (value < 0) { value = 0; }
     /* Scale */
     value *= settings->adc_volts.scaling;
 #ifdef VOLTS_DISPLAY_ALIGN_LEFT
@@ -193,6 +194,7 @@ static void do_measure(void)
     value = get_adc_amps();
     /* Offset */
     value -= settings->adc_amps.offset;
+    if (value < 0) { value = 0; }
     /* Scale */
     value *= settings->adc_amps.scaling;
 #ifdef VOLTS_DISPLAY_ALIGN_LEFT

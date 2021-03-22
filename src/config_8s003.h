@@ -23,11 +23,11 @@
 #define ADC_SCALE                       (3.3 / 1024.0)
 
 /* Resistance value for the combined elements R3 and RV2 from the sch */
-#define AMPS_R3_RV2                     200000.0
+#define AMPS_R3_RV2                     (180000.0)// + 10000.0)
 /* Resistance value for R4 from the sch */
 #define AMPS_R4                         8200.0
 /* Resistance value for the on-board shunt */
-#define AMPS_SHUNT                      0.02
+#define AMPS_SHUNT                      2
 /* Non-inverting OpAmp formula */
 #define GAIN_FOR_AMPS                   (((1 + (AMPS_R3_RV2 / AMPS_R4)) / AMPS_SHUNT) * ADC_SCALE)
 
