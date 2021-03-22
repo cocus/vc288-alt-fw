@@ -24,8 +24,8 @@
  * should be always aligned to the left of the display. This causes the decimal
  * place separator (the dot) to move according to the measured value.
  */
-#define VOLTS_DISPLAY_ALIGN_LEFT
-#define AMPS_DISPLAY_ALIGN_LEFT
+//#define VOLTS_DISPLAY_ALIGN_LEFT
+//#define AMPS_DISPLAY_ALIGN_LEFT
 
 #ifdef STM8S003
 #include "config_8s003.h"

@@ -40,10 +40,12 @@ void set_display_from_int(uint16_t number,
                           (decimal_dots & 1 ? 0x80 : 0);
     number /= 10;
     decimal_dots >>= 1;
+    digits >>= 1;
     display_data[row+1] = (digits & 1 ? seven_seg_lut[number % 10] : 0) |
                           (decimal_dots & 1 ? 0x80 : 0);
     number /= 10;
     decimal_dots >>= 1;
+    digits >>= 1;
     display_data[row+0] = (digits & 1 ? seven_seg_lut[number % 10] : 0) |
                           (decimal_dots & 1 ? 0x80 : 0);
 }

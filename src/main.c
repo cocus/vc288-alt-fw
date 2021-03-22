@@ -12,6 +12,12 @@
 ISR(ADC1_EOC_IRQHandler, ADC1_ISR);
 ISR(TIM2_UPD_OVF_IRQHandler, TIM2_ISR);
 
+enum display_set_align
+{
+    DISPLAY_ALIGN_LEFT = 0,
+    DISPLAY_ALIGN_RIGHT = 1,
+};
+
 /**
  * Default settings to be applied when the EEPROM contains
  * invalid data.
@@ -62,58 +68,105 @@ static void do_calibration(void)
 
 static void set_display_from_double(
   const HIGH_RES_FLOAT value,
-  const uint8_t pos
+  const uint8_t pos,
+  const enum display_set_align align
 )
 {
-    /* Clamp to zero */
-    if (value < 0.0)
+    if (align == DISPLAY_ALIGN_LEFT)
     {
-        set_display_from_int(
-            0,
-            pos,
-            SEVEN_SEG_DP_LEFTMOST,
-            SEVEN_SEG_DIGITS_ALL
-        );
-    }
-    else if (value >= 100.0)
-    {
-        /* 100. - 999. */
-        set_display_from_int(
-            value,
-            pos,
-            SEVEN_SEG_DP_RIGHTMOST,
-            SEVEN_SEG_DIGITS_ALL
-        );
-    }
-    else if (value >= 10.0)
-    {
-        /* 10.0 - 99.9 */
-        set_display_from_int(
-            value * 10.0,
-            pos,
-            SEVEN_SEG_DP_MIDDLE,
-            SEVEN_SEG_DIGITS_ALL
-        );
-    }
-    else if (value >= 1.0)
-    {
-        /* 1.00 - 9.99 */
-        set_display_from_int(
-            value * 100.0,
-            pos,
-            SEVEN_SEG_DP_LEFTMOST,
-            SEVEN_SEG_DIGITS_ALL
-        );
+        /* Clamp to zero */
+        if (value < 0.0)
+        {
+            set_display_from_int(
+                0,
+                pos,
+                SEVEN_SEG_DP_LEFTMOST,
+                SEVEN_SEG_DIGITS_ALL
+            );
+        }
+        else if (value >= 100.0)
+        {
+            /* 100. - 999. */
+            set_display_from_int(
+                value,
+                pos,
+                SEVEN_SEG_DP_RIGHTMOST,
+                SEVEN_SEG_DIGITS_ALL
+            );
+        }
+        else if (value >= 10.0)
+        {
+            /* 10.0 - 99.9 */
+            set_display_from_int(
+                value * 10.0,
+                pos,
+                SEVEN_SEG_DP_MIDDLE,
+                SEVEN_SEG_DIGITS_ALL
+            );
+        }
+        else if (value >= 1.0)
+        {
+            /* 1.00 - 9.99 */
+            set_display_from_int(
+                value * 100.0,
+                pos,
+                SEVEN_SEG_DP_LEFTMOST,
+                SEVEN_SEG_DIGITS_ALL
+            );
+        }
+        else
+        {
+            /* .000 - .999 */
+            set_display_from_int(
+                value * 1000.0,
+                pos,
+                SEVEN_SEG_DP_NONE,
+                SEVEN_SEG_DIGITS_ALL
+            );
+        }
     }
     else
     {
-        /* .000 - .999 */
-        set_display_from_int(
-            value * 1000.0,
-            pos,
-            SEVEN_SEG_DP_NONE,
-            SEVEN_SEG_DIGITS_ALL
-        );
+        /* Clamp to zero */
+        if (value < 0.0)
+        {
+            set_display_from_int(
+                0,
+                pos,
+                SEVEN_SEG_DP_LEFTMOST,
+                SEVEN_SEG_DIGITS_ALL
+            );
+        }
+        else if (value >= 100.0)
+        {
+            /* 100. - 999. */
+            set_display_from_int(
+                value,
+                pos,
+                SEVEN_SEG_DP_RIGHTMOST,
+                SEVEN_SEG_DIGITS_ALL
+            );
+        }
+        else if (value >= 10.0)
+        {
+            /* 10.0 - 99.9 */
+            set_display_from_int(
+                value * 10.0,
+                pos,
+                SEVEN_SEG_DP_MIDDLE,
+                SEVEN_SEG_DIGITS_ALL
+            );
+        }
+        else
+        {
+            /* 0.0 - 9.9 */
+            set_display_from_int(
+                value * 10.0,
+                pos,
+                SEVEN_SEG_DP_MIDDLE,
+                SEVEN_SEG_DIGITS_MIDDLE | SEVEN_SEG_DIGITS_RIGHTMOST
+            );
+        }
     }
 }
 
@@ -131,15 +184,22 @@ static void do_measure(void)
     value -= settings->adc_volts.offset;
     /* Scale */
     value *= settings->adc_volts.scaling;
-    set_display_from_double(value, SEVEN_SEG_FIRST_ROW);
-
+#ifdef VOLTS_DISPLAY_ALIGN_LEFT
+    set_display_from_double(value, SEVEN_SEG_FIRST_ROW, DISPLAY_ALIGN_LEFT);
+#else
+    set_display_from_double(value, SEVEN_SEG_FIRST_ROW, DISPLAY_ALIGN_RIGHT);
+#endif
     /* Raw value from ADC */
     value = get_adc_amps();
     /* Offset */
     value -= settings->adc_amps.offset;
     /* Scale */
     value *= settings->adc_amps.scaling;
-    set_display_from_double(value, SEVEN_SEG_SECOND_ROW);
+#ifdef VOLTS_DISPLAY_ALIGN_LEFT
+    set_display_from_double(value, SEVEN_SEG_SECOND_ROW, DISPLAY_ALIGN_LEFT);
+#else
+    set_display_from_double(value, SEVEN_SEG_SECOND_ROW, DISPLAY_ALIGN_RIGHT);
+#endif
 }
 
 void main()
