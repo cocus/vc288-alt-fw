@@ -392,83 +392,171 @@
 #define ADC_CR3_DBUF (1 << 7)
 #define ADC_CR3_OVR (1 << 6)
 
+
+#define CFG_GCR   *(volatile unsigned char *)0x7F60
+#define CFG_GCR_SWD ((uint8_t)0x01) /*!< Swim disable bit mask */
+#define CFG_GCR_AL  ((uint8_t)0x02) /*!< Activation Level bit mask */
+
+#define SWIM_CSR  *(volatile unsigned char *)0x7F80
+#define SWIM_CSR_PRI (1<<0)
+#define SWIM_CSR_HSIT (1<<1)
+#define SWIM_CSR_RST (1<<2)
+#define SWIM_CSR_OSCOFF (1<<3)
+#define SWIM_CSR_HS (1<<4)
+#define SWIM_CSR_SWIM_DM (1<<5)
+#define SWIM_CSR_NO_ACCESS (1<<6)
+#define SWIM_CSR_SAFE_MASK (1<<7)
+    
+#define CLK_SWIMCCR  *(volatile unsigned char *)0x50CD
+
+
 /* Interrupt commands */
-#define __enable_interrupt()  {__asm__("rim\n");}  /* enable interrupts */
-#define __disable_interrupt() {__asm__("sim\n");}  /* disable interrupts */
-#define rim()                 {__asm__("rim\n");}  /* enable interrupts */
-#define sim()                 {__asm__("sim\n");}  /* disable interrupts */
-#define nop()                 {__asm__("nop\n");}  /* No Operation */
-#define trap()                {__asm__("trap\n");} /* Trap (soft IT) */
-#define wfi()                 {__asm__("wfi\n");}  /* Wait For Interrupt */
-#define halt()                {__asm__("halt\n");} /* Halt */
+/*============================== Interrupts ====================================*/
+#if defined(_RAISONANCE_ ) || defined(__RCSTM8__)
+ #include <intrins.h>
+ #define enableInterrupts()    _rim_()  /* enable interrupts */
+ #define disableInterrupts()   _sim_()  /* disable interrupts */
+ #define __enable_interrupt()  _rim_()  /* enable interrupts */
+ #define __disable_interrupt() _sim_()  /* disable interrupts */
+ #define rim()                 _rim_()  /* enable interrupts */
+ #define sim()                 _sim_()  /* disable interrupts */
+ #define nop()                 _nop_()  /* No Operation */
+ #define trap()                _trap_() /* Trap (soft IT) */
+ #define wfi()                 _wfi_()  /* Wait For Interrupt */
+ #define halt()                _halt_() /* Halt */
+//#endif /*_RAISONANCE_*/
+#elif defined(_COSMIC_) || defined(__CSMC__)
+ #define enableInterrupts()    {_asm("rim\n");}  /* enable interrupts */
+ #define disableInterrupts()   {_asm("sim\n");}  /* disable interrupts */
+ #define __enable_interrupt()  {_asm("rim\n");}  /* enable interrupts */
+ #define __disable_interrupt() {_asm("sim\n");}  /* disable interrupts */
+ #define rim()                 {_asm("rim\n");}  /* enable interrupts */
+ #define sim()                 {_asm("sim\n");}  /* disable interrupts */
+ #define nop()                 {_asm("nop\n");}  /* No Operation */
+ #define trap()                {_asm("trap\n");} /* Trap (soft IT) */
+ #define wfi()                 {_asm("wfi\n");}  /* Wait For Interrupt */
+ #define halt()                {_asm("halt\n");} /* Halt */
+//#endif /*_COSMIC_*/
+#elif defined(_IAR_) || defined(__IAR_SYSTEMS_ICC__)
+ #include <intrinsics.h>
+ #define enableInterrupts()    __enable_interrupt()   /* enable interrupts */
+ #define disableInterrupts()   __disable_interrupt()  /* disable interrupts */
+ #define rim()                 __enable_interrupt()   /* enable interrupts */
+ #define sim()                 __disable_interrupt()  /* disable interrupts */
+ #define nop()                 __no_operation()       /* No Operation */
+ #define trap()                __trap()               /* Trap (soft IT) */
+ #define wfi()                 __wait_for_interrupt() /* Wait For Interrupt */
+ #define halt()                __halt()               /* Halt */
+//#endif /*_IAR_*/
+#else /**/
+ #define __enable_interrupt()  {__asm__("rim\n");}  /* enable interrupts */
+ #define __disable_interrupt() {__asm__("sim\n");}  /* disable interrupts */
+ #define rim()                 {__asm__("rim\n");}  /* enable interrupts */
+ #define sim()                 {__asm__("sim\n");}  /* disable interrupts */
+ #define nop()                 {__asm__("nop\n");}  /* No Operation */
+ #define trap()                {__asm__("trap\n");} /* Trap (soft IT) */
+ #define wfi()                 {__asm__("wfi\n");}  /* Wait For Interrupt */
+ #define halt()                {__asm__("halt\n");} /* Halt */
+#endif /**/
 
-#ifndef __SDCC
-#define __interrupt(x)
+/*============================== Interrupt vector Handling ========================*/
+
+#if defined(_COSMIC_) || defined(__CSMC__)
+ #define ISR(a,b) @far @interrupt void a(void)
+ #define ISR_TRAP(a) void @far @interrupt a(void)
+ #define INTERRUPT @far @interrupt
+//#endif /* _COSMIC_ */
+#elif defined(_RAISONANCE_) || defined(__RCSTM8__)
+ #define ISR(a,b) void a(void) interrupt b
+ #define ISR_TRAP(a) void a(void) trap
+//#endif /* _RAISONANCE_ */
+#elif defined(_IAR_) || defined(__IAR_SYSTEMS_ICC__)
+ #define STRINGVECTOR(x) #x
+ #define VECTOR_ID(x) STRINGVECTOR( vector = (x) )
+ #define ISR( a, b )  \
+ _Pragma( VECTOR_ID( (b)+2 ) )        \
+ __interrupt void (a)( void )
+ #define ISR_TRAP(a) \
+ _Pragma( VECTOR_ID( 1 ) ) \
+ __interrupt void (a) (void)  
+ #define INTERRUPT __interrupt
+//#endif /* _IAR_ */
+#else
+ #ifndef __SDCC
+ #define __interrupt(x)
+ #endif
+ // Note that the vector counts start from 0, i.e. the (addr_vector - 0x8000) / 4
+ // In SDCC however, RESET and TRAP are left out in this count, i.e. IRQ0 is at
+ // address 0x8008. So we use this macro to allow the below vector definitions from
+ // iostm8s003f3.h to still work.
+ #define ISR(name,vector) void name(void) __interrupt(vector)
 #endif
-// Note that the vector counts start from 0, i.e. the (addr_vector - 0x8000) / 4
-// In SDCC however, RESET and TRAP are left out in this count, i.e. IRQ0 is at
-// address 0x8008. So we use this macro to allow the below vector definitions from
-// iostm8s003f3.h to still work.
-#define ISR(name,vector) void name(void) __interrupt(vector - 2)
 
-#define AWU_vector                           0x03
-#define EXTI_PORTA_vector                    0x05
-#define EXTI_PORTB_vector                    0x06
-#define EXTI_PORTC_vector                    0x07
-#define EXTI_PORTD_vector                    0x08
-#define EXTI_PORTE_vector                    0x09
-#define SPI_TXE_vector                       0x0C
-#define SPI_RXNE_vector                      0x0C
-#define SPI_WKUP_vector                      0x0C
-#define SPI_CRCERR_vector                    0x0C
-#define SPI_OVR_vector                       0x0C
-#define SPI_MODF_vector                      0x0C
-#define TIM1_OVR_UIF_vector                  0x0D
-#define TIM1_CAPCOM_BIF_vector               0x0D
-#define TIM1_CAPCOM_TIF_vector               0x0D
-#define TIM1_CAPCOM_CC1IF_vector             0x0E
-#define TIM1_CAPCOM_CC2IF_vector             0x0E
-#define TIM1_CAPCOM_CC3IF_vector             0x0E
-#define TIM1_CAPCOM_CC4IF_vector             0x0E
-#define TIM1_CAPCOM_COMIF_vector             0x0E
-#define TIM2_OVR_UIF_vector                  0x0F
-#define TIM2_CAPCOM_CC1IF_vector             0x10
-#define TIM2_CAPCOM_TIF_vector               0x10
-#define TIM2_CAPCOM_CC2IF_vector             0x10
-#define TIM2_CAPCOM_CC3IF_vector             0x10
-#define UART1_T_TXE_vector                   0x13
-#define UART1_T_TC_vector                    0x13
-#define UART1_R_OR_vector                    0x14
-#define UART1_R_RXNE_vector                  0x14
-#define UART1_R_IDLE_vector                  0x14
-#define UART1_R_PE_vector                    0x14
-#define UART1_R_LBDF_vector                  0x14
-#define I2C_ADD10_vector                     0x15
-#define I2C_ADDR_vector                      0x15
-#define I2C_OVR_vector                       0x15
-#define I2C_STOPF_vector                     0x15
-#define I2C_BTF_vector                       0x15
-#define I2C_WUFH_vector                      0x15
-#define I2C_RXNE_vector                      0x15
-#define I2C_TXE_vector                       0x15
-#define I2C_BERR_vector                      0x15
-#define I2C_ARLO_vector                      0x15
-#define I2C_AF_vector                        0x15
-#define I2C_SB_vector                        0x15
-#define ADC1_AWS0_vector                     0x18
-#define ADC1_AWS1_vector                     0x18
-#define ADC1_AWS2_vector                     0x18
-#define ADC1_AWS3_vector                     0x18
-#define ADC1_AWS4_vector                     0x18
-#define ADC1_AWS5_vector                     0x18
-#define ADC1_AWS6_vector                     0x18
-#define ADC1_EOC_vector                      0x18
-#define ADC1_AWS8_vector                     0x18
-#define ADC1_AWS9_vector                     0x18
-#define ADC1_AWDG_vector                     0x18
-#define ADC1_AWS7_vector                     0x18
-#define TIM4_OVR_UIF_vector                  0x19
-#define FLASH_EOP_vector                     0x1A
-#define FLASH_WR_PG_DIS_vector               0x1A
+/**
+  * @brief  ITC Interrupt Lines selection
+  */
+typedef enum {
+  ITC_IRQ_TLI            = 0,   /*!< Software interrupt */
+  ITC_IRQ_AWU            = 1,   /*!< Auto wake up from halt interrupt */
+  ITC_IRQ_CLK            = 2,   /*!< Clock controller interrupt */
+  ITC_IRQ_PORTA          = 3,   /*!< Port A external interrupts */
+  ITC_IRQ_PORTB          = 4,   /*!< Port B external interrupts */
+  ITC_IRQ_PORTC          = 5,   /*!< Port C external interrupts */
+  ITC_IRQ_PORTD          = 6,   /*!< Port D external interrupts */
+  ITC_IRQ_PORTE          = 7,   /*!< Port E external interrupts */
+  
+#if defined(STM8S208) || defined(STM8AF52Ax)
+  ITC_IRQ_CAN_RX         = 8,   /*!< beCAN RX interrupt */
+  ITC_IRQ_CAN_TX         = 9,   /*!< beCAN TX/ER/SC interrupt */
+#endif /*STM8S208 or STM8AF52Ax */
+
+#ifdef STM8S903
+  ITC_IRQ_PORTF          = 8,   /*!< Port F external interrupts */
+#endif /*STM8S903*/
+
+  ITC_IRQ_SPI            = 10,  /*!< SPI interrupt */
+  ITC_IRQ_TIM1_OVF       = 11,  /*!< TIM1 update/overflow/underflow/trigger/
+                                         break interrupt*/
+  ITC_IRQ_TIM1_CAPCOM    = 12,  /*!< TIM1 capture/compare interrupt */
+  
+#ifdef STM8S903
+  ITC_IRQ_TIM5_OVFTRI    = 13,  /*!< TIM5 update/overflow/underflow/trigger/
+                                         interrupt */
+  ITC_IRQ_TIM5_CAPCOM    = 14,  /*!< TIM5 capture/compare interrupt */
+#else  
+  ITC_IRQ_TIM2_OVF       = 13,  /*!< TIM2 update /overflow interrupt */
+  ITC_IRQ_TIM2_CAPCOM    = 14,  /*!< TIM2 capture/compare interrupt */
+#endif /*STM8S903*/
+
+  ITC_IRQ_TIM3_OVF       = 15,  /*!< TIM3 update /overflow interrupt*/
+  ITC_IRQ_TIM3_CAPCOM    = 16,  /*!< TIM3 update /overflow interrupt */
+  ITC_IRQ_UART1_TX       = 17,  /*!< USART1 TX interrupt */
+  ITC_IRQ_UART1_RX       = 18,  /*!< USART1 RX interrupt */
+  ITC_IRQ_I2C            = 19,  /*!< I2C interrupt */
+  
+#if defined(STM8S105) || defined(STM8S005) || defined(STM8AF626x)
+  ITC_IRQ_UART2_TX       = 20,  /*!< USART2 TX interrupt */
+  ITC_IRQ_UART2_RX       = 21,  /*!< USART2 RX interrupt */
+#endif /*STM8S105 or STM8AF626x */
+
+#if defined(STM8S208) || defined(STM8S207) || defined(STM8S007) || defined(STM8AF52Ax) || defined(STM8AF62Ax)
+  ITC_IRQ_UART3_TX       = 20,  /*!< USART3 TX interrupt */
+  ITC_IRQ_UART3_RX       = 21,  /*!< USART3 RX interrupt */
+  ITC_IRQ_ADC2           = 22,  /*!< ADC2 interrupt */
+#endif /*STM8S208 or STM8S207 or STM8AF52Ax or STM8AF62Ax */
+
+#if defined(STM8S105) || defined(STM8S005) || defined(STM8S103) || defined(STM8S003) ||  defined(STM8S903) || defined(STM8AF626x)  
+  ITC_IRQ_ADC1           = 22,  /*!< ADC2 interrupt */
+#endif /*STM8S105, STM8S103 or STM8S903 or STM8AF626x */
+
+#ifdef STM8S903
+  ITC_IRQ_TIM6_OVFTRI    = 23,  /*!< TIM6 update/overflow/underflow/trigger/
+                                         interrupt */
+#else
+  ITC_IRQ_TIM4_OVF       = 23,  /*!< TIM4 update /overflow interrupt */
+#endif /*STM8S903*/
+
+  ITC_IRQ_EEPROM_EEC     = 24  /*!< Flash interrupt */
+} ITC_Irq_TypeDef;
 
 #endif // _STH8_H

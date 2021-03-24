@@ -1,5 +1,28 @@
 #include "config.h"
 #include "gpio.h"
+#include "hardware_pin.h"
+#include "display_7seg.h"
+
+
+#if DISPLAY_TYPE == SEVEN_SEG_COMMON_ANODE
+ #define SEGDATASETS(data,mask)  ((data&mask) == 0)  
+ #define SEGROWSELECT(digit,row)  (digit == row)  
+#else
+ #define SEGDATASETS(data,mask)  ((data&mask) != 0)
+ #define SEGROWSELECT(digit,row)  (digit != row)
+#endif
+
+
+void swim_set_as_gpio(void)
+{
+#if !defined(SWIM_DEBUG_ENABLED)
+    SETBIT(PORT(PD,DDR), PIN1);   /* out */
+    SETBIT(PORT(PD,CR1), PIN1);   /* push pull */
+    CLRBIT(PORT(PD,CR2), PIN1);   /* speed 2MHz*/
+    //CFG_GCR = CFG_GCR_SWD;// disable SWIM interface
+#endif
+}
+
 
 void setup_gpios(void)
 {
@@ -28,95 +51,100 @@ void setup_gpios(void)
      */
 
     /* A */
-#ifndef SWIM_DEBUG_ENABLED
+#if !defined(SWIM_DEBUG_ENABLED)
     /* Note: PD1 is also used for SWIM. You can't use the segment A while using SWIM */
-    SETBIT(PD_DDR, PIN1);   /* PD1 = out */
-    SETBIT(PD_CR1, PIN1);   /* push pull */
-    CLRBIT(PD_CR2, PIN1);   /* speed 2MHz*/
+    SETBIT(PORT(MCD_A_PORT,DDR), MCD_A_PIN);   /* out */
+    SETBIT(PORT(MCD_A_PORT,CR1), MCD_A_PIN);   /* push pull */
+    CLRBIT(PORT(MCD_A_PORT,CR2), MCD_A_PIN);   /* speed 2MHz*/
 #endif
 
     /* B */
-    SETBIT(PA_DDR, PIN3);   /* PA3 = out */
-    SETBIT(PA_CR1, PIN3);   /* push pull */
-    CLRBIT(PA_CR2, PIN3);   /* speed 2MHz*/
+    SETBIT(PORT(MCD_B_PORT,DDR), MCD_B_PIN);   /* out */
+    SETBIT(PORT(MCD_B_PORT,CR1), MCD_B_PIN);   /* push pull */
+    CLRBIT(PORT(MCD_B_PORT,CR2), MCD_B_PIN);   /* speed 2MHz*/
 
     /* C */
-    SETBIT(PC_DDR, PIN3);   /* PC3 = out */
-    SETBIT(PC_CR1, PIN3);   /* push pull */
-    CLRBIT(PC_CR2, PIN3);   /* speed 2MHz*/
+    SETBIT(PORT(MCD_C_PORT,DDR), MCD_C_PIN);   /* out */
+    SETBIT(PORT(MCD_C_PORT,CR1), MCD_C_PIN);   /* push pull */
+    CLRBIT(PORT(MCD_C_PORT,CR2), MCD_C_PIN);   /* speed 2MHz*/
 
     /* D */
-    SETBIT(PC_DDR, PIN6);   /* PC6 = out */
-    SETBIT(PC_CR1, PIN6);   /* push pull */
-    CLRBIT(PC_CR2, PIN6);   /* speed 2MHz*/
+    SETBIT(PORT(MCD_D_PORT,DDR), MCD_D_PIN);   /* out */
+    SETBIT(PORT(MCD_D_PORT,CR1), MCD_D_PIN);   /* push pull */
+    CLRBIT(PORT(MCD_D_PORT,CR2), MCD_D_PIN);   /* speed 2MHz*/
 
     /* E */
-    SETBIT(PC_DDR, PIN7);   /* PC7 = out */
-    SETBIT(PC_CR1, PIN7);   /* push pull */
-    CLRBIT(PC_CR2, PIN7);   /* speed 2MHz*/
+    SETBIT(PORT(MCD_E_PORT,DDR), MCD_E_PIN);   /* out */
+    SETBIT(PORT(MCD_E_PORT,CR1), MCD_E_PIN);   /* push pull */
+    CLRBIT(PORT(MCD_E_PORT,CR2), MCD_E_PIN);   /* speed 2MHz*/
 
     /* F */
-    SETBIT(PC_DDR, PIN4);   /* PC4 = out */
-    SETBIT(PC_CR1, PIN4);   /* push pull */
-    CLRBIT(PC_CR2, PIN4);   /* speed 2MHz*/
+    SETBIT(PORT(MCD_F_PORT,DDR), MCD_F_PIN);   /* out */
+    SETBIT(PORT(MCD_F_PORT,CR1), MCD_F_PIN);   /* push pull */
+    CLRBIT(PORT(MCD_F_PORT,CR2), MCD_F_PIN);   /* speed 2MHz*/
 
     /* G */
-    SETBIT(PA_DDR, PIN2);   /* PA2 = out */
-    SETBIT(PA_CR1, PIN2);   /* push pull */
-    CLRBIT(PA_CR2, PIN2);   /* speed 2MHz*/
+    SETBIT(PORT(MCD_G_PORT,DDR), MCD_G_PIN);   /* out */
+    SETBIT(PORT(MCD_G_PORT,CR1), MCD_G_PIN);   /* push pull */
+    CLRBIT(PORT(MCD_G_PORT,CR2), MCD_G_PIN);   /* speed 2MHz*/
 
     /* Decimal point */
-    SETBIT(PC_DDR, PIN5);   /* PC5 = out */
-    SETBIT(PC_CR1, PIN5);   /* push pull */
-    CLRBIT(PC_CR2, PIN5);   /* speed 2MHz*/
+    SETBIT(PORT(MCD_DP_PORT,DDR), MCD_DP_PIN);   /* out */
+    SETBIT(PORT(MCD_DP_PORT,CR1), MCD_DP_PIN);   /* push pull */
+    CLRBIT(PORT(MCD_DP_PORT,CR2), MCD_DP_PIN);   /* speed 2MHz*/
 
     /**
      * First row of LEDs (common anodes/cathodes)
      */
-    SETBIT(PD_DDR, PIN5);   /* PD5 = out */
-    SETBIT(PD_CR1, PIN5);   /* push pull */
-    CLRBIT(PD_CR2, PIN5);   /* speed 2MHz*/
+    SETBIT(PORT(MCD1_AD1_PORT,DDR), MCD1_AD1_PIN);   /* out */
+    SETBIT(PORT(MCD1_AD1_PORT,CR1), MCD1_AD1_PIN);   /* push pull */
+    CLRBIT(PORT(MCD1_AD1_PORT,CR2), MCD1_AD1_PIN);   /* speed 2MHz*/
 
-    SETBIT(PD_DDR, PIN4);   /* PD4 = out */
-    SETBIT(PD_CR1, PIN4);   /* push pull */
-    CLRBIT(PD_CR2, PIN4);   /* speed 2MHz*/
+    SETBIT(PORT(MCD1_AD2_PORT,DDR), MCD1_AD2_PIN);   /* out */
+    SETBIT(PORT(MCD1_AD2_PORT,CR1), MCD1_AD2_PIN);   /* push pull */
+    CLRBIT(PORT(MCD1_AD2_PORT,CR2), MCD1_AD2_PIN);   /* speed 2MHz*/
 
+    SETBIT(PORT(MCD1_AD3_PORT,DDR), MCD1_AD3_PIN);   /* out */
+    SETBIT(PORT(MCD1_AD3_PORT,CR1), MCD1_AD3_PIN);   /* push pull */
+    CLRBIT(PORT(MCD1_AD3_PORT,CR2), MCD1_AD3_PIN);   /* speed 2MHz*/
+    
+    
     /* PD6 needs to be controlled with programming_pin_control() */
 
     /**
      * Second row of LEDs (common anodes/cathodes)
      */
-    SETBIT(PB_DDR, PIN4);   /* PB4 = out */
-    SETBIT(PB_CR1, PIN4);   /* push pull */
-    CLRBIT(PB_CR2, PIN4);   /* speed 2MHz*/
+    SETBIT(PORT(MCD2_AD1_PORT,DDR), MCD2_AD1_PIN);   /* out */
+    SETBIT(PORT(MCD2_AD1_PORT,CR1), MCD2_AD1_PIN);   /* push pull */
+    CLRBIT(PORT(MCD2_AD1_PORT,CR2), MCD2_AD1_PIN);   /* speed 2MHz*/
 
-    SETBIT(PA_DDR, PIN1);   /* PA1 = out */
-    SETBIT(PA_CR1, PIN1);   /* push pull */
-    CLRBIT(PA_CR2, PIN1);   /* speed 2MHz*/
+    SETBIT(PORT(MCD2_AD2_PORT,DDR), MCD2_AD2_PIN);   /* out */
+    SETBIT(PORT(MCD2_AD2_PORT,CR1), MCD2_AD2_PIN);   /* push pull */
+    CLRBIT(PORT(MCD2_AD2_PORT,CR2), MCD2_AD2_PIN);   /* speed 2MHz*/
 
-    SETBIT(PB_DDR, PIN5);   /* PB5 = out */
-    SETBIT(PB_CR1, PIN5);   /* push pull */
-    CLRBIT(PB_CR2, PIN5);   /* speed 2MHz*/
+    SETBIT(PORT(MCD2_AD3_PORT,DDR), MCD2_AD3_PIN);   /* out */
+    SETBIT(PORT(MCD2_AD3_PORT,CR1), MCD2_AD3_PIN);   /* push pull */
+    CLRBIT(PORT(MCD2_AD3_PORT,CR2), MCD2_AD3_PIN);   /* speed 2MHz*/
 }
 
 uint8_t read_programming_pin(void)
 {
-    return (PD_IDR & PIN6) == 0;
+  return (PORT(STPROG_PORT,IDR) & STPROG_PIN);
 }
 
 void programming_pin_control(uint8_t is_input)
 {
     if (is_input == 1)
     {
-        CLRBIT(PD_DDR, PIN6);   /* PD6 = in        */
-        SETBIT(PD_CR1, PIN6);   /* Pull-up         */
-        CLRBIT(PD_CR2, PIN6);   /* No intrerrupt   */
+        CLRBIT(PORT(STPROG_PORT,DDR), STPROG_PIN);   /* PD6 = in        */
+        SETBIT(PORT(STPROG_PORT,CR1), STPROG_PIN);   /* Pull-up         */
+        CLRBIT(PORT(STPROG_PORT,CR2), STPROG_PIN);   /* No intrerrupt   */
     }
     else
     {
-        SETBIT(PD_DDR, PIN6);   /* PD6 = out       */
-        SETBIT(PD_CR1, PIN6);   /* push pull       */
-        CLRBIT(PD_CR2, PIN6);   /* speed 2MHz      */
+        SETBIT(PORT(STPROG_PORT,DDR), STPROG_PIN);   /* PD6 = out       */
+        SETBIT(PORT(STPROG_PORT,CR1), STPROG_PIN);   /* push pull       */
+        CLRBIT(PORT(STPROG_PORT,CR2), STPROG_PIN);   /* speed 2MHz      */
     }
 }
 
@@ -124,47 +152,39 @@ void programming_pin_control(uint8_t is_input)
 void set_segments(uint8_t data)
 {
     // G
-    if (data & 1) { SETBIT(PA_ODR, PIN2); } else { CLRBIT(PA_ODR, PIN2); }
-    data >>= 1;
+    if (SEGDATASETS(data, SEG_MASK_G)) { SETBIT(PORT(MCD_G_PORT,ODR), MCD_G_PIN); } else { CLRBIT(PORT(MCD_G_PORT,ODR), MCD_G_PIN); }
 
     // F
-    if (data & 1) { SETBIT(PC_ODR, PIN4); } else { CLRBIT(PC_ODR, PIN4); }
-    data >>= 1;
+    if (SEGDATASETS(data, SEG_MASK_F)) { SETBIT(PORT(MCD_F_PORT,ODR), MCD_F_PIN); } else { CLRBIT(PORT(MCD_F_PORT,ODR), MCD_F_PIN); }
 
     // E
-    if (data & 1) { SETBIT(PC_ODR, PIN7); } else { CLRBIT(PC_ODR, PIN7); }
-    data >>= 1;
+    if (SEGDATASETS(data, SEG_MASK_E)) { SETBIT(PORT(MCD_E_PORT,ODR), MCD_E_PIN); } else { CLRBIT(PORT(MCD_E_PORT,ODR), MCD_E_PIN); }
 
     // D
-    if (data & 1) { SETBIT(PC_ODR, PIN6); } else { CLRBIT(PC_ODR, PIN6); }
-    data >>= 1;
+    if (SEGDATASETS(data, SEG_MASK_D)) { SETBIT(PORT(MCD_D_PORT,ODR), MCD_D_PIN); } else { CLRBIT(PORT(MCD_D_PORT,ODR), MCD_D_PIN); }
 
     // C
-    if (data & 1) { SETBIT(PC_ODR, PIN3); } else { CLRBIT(PC_ODR, PIN3); }
-    data >>= 1;
+    if (SEGDATASETS(data, SEG_MASK_C)) { SETBIT(PORT(MCD_C_PORT,ODR), MCD_C_PIN); } else { CLRBIT(PORT(MCD_C_PORT,ODR), MCD_C_PIN); }
 
     // B
-    if (data & 1) { SETBIT(PA_ODR, PIN3); } else { CLRBIT(PA_ODR, PIN3); }
-    data >>= 1;
+    if (SEGDATASETS(data, SEG_MASK_B)) { SETBIT(PORT(MCD_B_PORT,ODR), MCD_B_PIN); } else { CLRBIT(PORT(MCD_B_PORT,ODR), MCD_B_PIN); }
 
-#ifndef SWIM_DEBUG_ENABLED
+#if !defined(SWIM_DEBUG_ENABLED)
     // A (same pin of SWIM)
-    if (data & 1) { SETBIT(PD_ODR, PIN1); } else { CLRBIT(PD_ODR, PIN1); }
+    if (SEGDATASETS(data, SEG_MASK_A)) { SETBIT(PORT(MCD_A_PORT,ODR), MCD_A_PIN); } else { CLRBIT(PORT(MCD_A_PORT,ODR), MCD_A_PIN); }
 #endif
-    data >>= 1;
 
     // Dp
-    if (data & 1) { SETBIT(PC_ODR, PIN5); } else { CLRBIT(PC_ODR, PIN5); }
-    data >>= 1;
+    if (SEGDATASETS(data, SEG_MASK_DP)) { SETBIT(PORT(MCD_DP_PORT,ODR), MCD_DP_PIN); } else { CLRBIT(PORT(MCD_DP_PORT,ODR), MCD_DP_PIN); }
 }
 
 void select_digit(uint8_t digit)
 {
-    if (digit != 0) { SETBIT(PD_ODR, PIN4); } else { CLRBIT(PD_ODR, PIN4); }
-    if (digit != 1) { SETBIT(PD_ODR, PIN6); } else { CLRBIT(PD_ODR, PIN6); }
-    if (digit != 2) { SETBIT(PD_ODR, PIN5); } else { CLRBIT(PD_ODR, PIN5); }
+    if (SEGROWSELECT(digit, 0)) { SETBIT(PORT(MCD1_AD1_PORT,ODR), MCD1_AD1_PIN); } else { CLRBIT(PORT(MCD1_AD1_PORT,ODR), MCD1_AD1_PIN); }
+    if (SEGROWSELECT(digit, 1)) { SETBIT(PORT(MCD1_AD2_PORT,ODR), MCD1_AD2_PIN); } else { CLRBIT(PORT(MCD1_AD2_PORT,ODR), MCD1_AD2_PIN); }
+    if (SEGROWSELECT(digit, 2)) { SETBIT(PORT(MCD1_AD3_PORT,ODR), MCD1_AD3_PIN); } else { CLRBIT(PORT(MCD1_AD3_PORT,ODR), MCD1_AD3_PIN); }
 
-    if (digit != 3) { SETBIT(PB_ODR, PIN5); } else { CLRBIT(PB_ODR, PIN5); }
-    if (digit != 4) { SETBIT(PB_ODR, PIN4); } else { CLRBIT(PB_ODR, PIN4); }
-    if (digit != 5) { SETBIT(PA_ODR, PIN1); } else { CLRBIT(PA_ODR, PIN1); }
+    if (SEGROWSELECT(digit, 3)) { SETBIT(PORT(MCD2_AD1_PORT,ODR), MCD2_AD1_PIN); } else { CLRBIT(PORT(MCD2_AD1_PORT,ODR), MCD2_AD1_PIN); }
+    if (SEGROWSELECT(digit, 4)) { SETBIT(PORT(MCD2_AD2_PORT,ODR), MCD2_AD2_PIN); } else { CLRBIT(PORT(MCD2_AD2_PORT,ODR), MCD2_AD2_PIN); }
+    if (SEGROWSELECT(digit, 5)) { SETBIT(PORT(MCD2_AD3_PORT,ODR), MCD2_AD3_PIN); } else { CLRBIT(PORT(MCD2_AD3_PORT,ODR), MCD2_AD3_PIN); }
 }

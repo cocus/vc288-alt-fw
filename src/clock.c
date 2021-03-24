@@ -37,12 +37,12 @@ void setup_clock(stm8s_core_clocks speed)
     f_CPU = f_master >> (speed & 0x07);
 }
 
-const uint32_t clock_get_f_master(void)
+uint32_t clock_get_f_master(void)
 {
     return f_master;
 }
 
-const uint32_t clock_get_f_cpu(void)
+uint32_t clock_get_f_cpu(void)
 {
     return f_CPU;
 }

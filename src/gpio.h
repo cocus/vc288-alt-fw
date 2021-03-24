@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+void swim_set_as_gpio(void);
 void setup_gpios(void);
 
 void set_segments(uint8_t data);

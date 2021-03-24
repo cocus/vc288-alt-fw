@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+void wait_adc_newsets(void);
 void setup_adc(void);
 uint16_t get_adc_amps(void);
 uint16_t get_adc_volts(void);

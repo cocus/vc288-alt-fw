@@ -9,8 +9,8 @@
 #include "eeprom.h"
 
 /* required per SDCC Compiler User Guide */
-ISR(ADC1_EOC_IRQHandler, ADC1_ISR);
-ISR(TIM2_UPD_OVF_IRQHandler, TIM2_ISR);
+ISR(ADC1_EOC_IRQHandler, ITC_IRQ_ADC1);
+ISR(TIM2_UPD_OVF_IRQHandler, ITC_IRQ_TIM2_OVF);
 
 enum display_set_align
 {
@@ -49,7 +49,8 @@ static void do_calibration(void)
     __enable_interrupt();
 
     /* Wait a moment so the ADC settles */
-    delay(100000);
+    wait_adc_newsets();
+    //delay(100000);
 
     /**
      * Current ADC values should correspond to an absolute zero,
@@ -88,7 +89,7 @@ static void set_display_from_double(
         {
             /* 100. - 999. */
             set_display_from_int(
-                value,
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_RIGHTMOST,
                 SEVEN_SEG_DIGITS_ALL
@@ -98,7 +99,7 @@ static void set_display_from_double(
         {
             /* 10.0 - 99.9 */
             set_display_from_int(
-                value * 10.0,
+                (uint16_t)(value * 10.0),
                 pos,
                 SEVEN_SEG_DP_MIDDLE,
                 SEVEN_SEG_DIGITS_ALL
@@ -108,7 +109,7 @@ static void set_display_from_double(
         {
             /* 1.00 - 9.99 */
             set_display_from_int(
-                value * 100.0,
+                (uint16_t)(value * 100.0),
                 pos,
                 SEVEN_SEG_DP_LEFTMOST,
                 SEVEN_SEG_DIGITS_ALL
@@ -118,7 +119,7 @@ static void set_display_from_double(
         {
             /* .000 - .999 */
             set_display_from_int(
-                value * 1000.0,
+                (uint16_t)(value * 1000.0),
                 pos,
                 SEVEN_SEG_DP_NONE,
                 SEVEN_SEG_DIGITS_ALL
@@ -141,7 +142,7 @@ static void set_display_from_double(
         {
             /* 100. - 999. */
             set_display_from_int(
-                value,
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_RIGHTMOST,
                 SEVEN_SEG_DIGITS_ALL
@@ -151,7 +152,7 @@ static void set_display_from_double(
         {
             /* 10.0 - 99.9 */
             set_display_from_int(
-                value * 10.0,
+                (uint16_t)(value * 10.0),
                 pos,
                 SEVEN_SEG_DP_MIDDLE,
                 SEVEN_SEG_DIGITS_ALL
@@ -161,7 +162,7 @@ static void set_display_from_double(
         {
             /* 0.0 - 9.9 */
             set_display_from_int(
-                value * 10.0,
+                (uint16_t)(value * 100.0),
                 pos,
                 SEVEN_SEG_DP_MIDDLE,
                 SEVEN_SEG_DIGITS_MIDDLE | SEVEN_SEG_DIGITS_RIGHTMOST
@@ -236,13 +237,18 @@ void main()
     if (read_programming_pin() == 0)
     {
         /* wait until the user stops removes the jumper on the programming pin */
-        //while(!read_programming_pin());
-
+        while(!read_programming_pin());
         /* execute the calibration routine */
-        //do_calibration();
+        do_calibration();
         /* Calibration done, continue */
     }
-
+    else{
+#if !defined(SWIM_DEBUG_ENABLED) || defined(NDEBUG)
+      //swim disable
+      swim_set_as_gpio();
+#endif
+    }
+    
     /* Set the outputs (except the programming input pin) */
     setup_gpios();
 
@@ -259,7 +265,7 @@ void main()
     //
     while (1)
     {
-        do_measure();
-        delay(20000);
+      wait_adc_newsets();  
+      do_measure();
     }
 }
