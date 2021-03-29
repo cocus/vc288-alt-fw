@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <math.h>
 #include "stm8.h"
 #include "config.h"
 #include "clock.h"
@@ -68,7 +69,7 @@ static void do_calibration(void)
 }
 
 static void set_display_from_double(
-  const HIGH_RES_FLOAT value,
+  HIGH_RES_FLOAT value,
   const uint8_t pos,
   const enum display_set_align align
 )
@@ -88,6 +89,7 @@ static void set_display_from_double(
         else if (value >= 100.0)
         {
             /* 100. - 999. */
+            value = roundf(value);
             set_display_from_int(
                 (uint16_t)(value),
                 pos,
@@ -98,8 +100,9 @@ static void set_display_from_double(
         else if (value >= 10.0)
         {
             /* 10.0 - 99.9 */
+            value = roundf(value * 10.0);
             set_display_from_int(
-                (uint16_t)(value * 10.0),
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_MIDDLE,
                 SEVEN_SEG_DIGITS_ALL
@@ -108,8 +111,9 @@ static void set_display_from_double(
         else if (value >= 1.0)
         {
             /* 1.00 - 9.99 */
+            value = roundf(value * 100.0);
             set_display_from_int(
-                (uint16_t)(value * 100.0),
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_LEFTMOST,
                 SEVEN_SEG_DIGITS_ALL
@@ -118,8 +122,9 @@ static void set_display_from_double(
         else
         {
             /* .000 - .999 */
+            value = roundf(value * 1000.0);
             set_display_from_int(
-                (uint16_t)(value * 1000.0),
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_NONE,
                 SEVEN_SEG_DIGITS_ALL
@@ -141,6 +146,7 @@ static void set_display_from_double(
         else if (value >= 100.0)
         {
             /* 100. - 999. */
+            value = roundf(value);
             set_display_from_int(
                 (uint16_t)(value),
                 pos,
@@ -151,8 +157,9 @@ static void set_display_from_double(
         else if (value >= 10.0)
         {
             /* 10.0 - 99.9 */
+            value = roundf(value * 10.0);
             set_display_from_int(
-                (uint16_t)(value * 10.0),
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_MIDDLE,
                 SEVEN_SEG_DIGITS_ALL
@@ -161,8 +168,9 @@ static void set_display_from_double(
         else
         {
             /* 0.0 - 9.9 */
+            value = roundf(value * 100.0);
             set_display_from_int(
-                (uint16_t)(value * 100.0),
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_MIDDLE,
                 SEVEN_SEG_DIGITS_MIDDLE | SEVEN_SEG_DIGITS_RIGHTMOST
