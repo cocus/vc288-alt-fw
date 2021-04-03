@@ -6,7 +6,7 @@
  * Define this symbol to debug the code. As a side effect, one segment will be
  * garbled with the SWIM data.
  */
-#define SWIM_DEBUG_ENABLED
+//#define SWIM_DEBUG_ENABLED
 
 /**
  * Defines how many samples are going to be averaged.

@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <math.h>
 #include "stm8.h"
 #include "config.h"
 #include "clock.h"
@@ -9,8 +10,8 @@
 #include "eeprom.h"
 
 /* required per SDCC Compiler User Guide */
-ISR(ADC1_EOC_IRQHandler, ADC1_ISR);
-ISR(TIM2_UPD_OVF_IRQHandler, TIM2_ISR);
+ISR(ADC1_EOC_IRQHandler, ITC_IRQ_ADC1);
+ISR(TIM2_UPD_OVF_IRQHandler, ITC_IRQ_TIM2_OVF);
 
 enum display_set_align
 {
@@ -49,7 +50,8 @@ static void do_calibration(void)
     __enable_interrupt();
 
     /* Wait a moment so the ADC settles */
-    delay(100000);
+    wait_adc_newsets();
+    //delay(100000);
 
     /**
      * Current ADC values should correspond to an absolute zero,
@@ -67,7 +69,7 @@ static void do_calibration(void)
 }
 
 static void set_display_from_double(
-  const HIGH_RES_FLOAT value,
+  HIGH_RES_FLOAT value,
   const uint8_t pos,
   const enum display_set_align align
 )
@@ -87,8 +89,9 @@ static void set_display_from_double(
         else if (value >= 100.0)
         {
             /* 100. - 999. */
+            value = roundf(value);
             set_display_from_int(
-                value,
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_RIGHTMOST,
                 SEVEN_SEG_DIGITS_ALL
@@ -97,8 +100,9 @@ static void set_display_from_double(
         else if (value >= 10.0)
         {
             /* 10.0 - 99.9 */
+            value = roundf(value * 10.0);
             set_display_from_int(
-                value * 10.0,
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_MIDDLE,
                 SEVEN_SEG_DIGITS_ALL
@@ -107,8 +111,9 @@ static void set_display_from_double(
         else if (value >= 1.0)
         {
             /* 1.00 - 9.99 */
+            value = roundf(value * 100.0);
             set_display_from_int(
-                value * 100.0,
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_LEFTMOST,
                 SEVEN_SEG_DIGITS_ALL
@@ -117,8 +122,9 @@ static void set_display_from_double(
         else
         {
             /* .000 - .999 */
+            value = roundf(value * 1000.0);
             set_display_from_int(
-                value * 1000.0,
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_NONE,
                 SEVEN_SEG_DIGITS_ALL
@@ -140,8 +146,9 @@ static void set_display_from_double(
         else if (value >= 100.0)
         {
             /* 100. - 999. */
+            value = roundf(value);
             set_display_from_int(
-                value,
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_RIGHTMOST,
                 SEVEN_SEG_DIGITS_ALL
@@ -150,8 +157,9 @@ static void set_display_from_double(
         else if (value >= 10.0)
         {
             /* 10.0 - 99.9 */
+            value = roundf(value * 10.0);
             set_display_from_int(
-                value * 10.0,
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_MIDDLE,
                 SEVEN_SEG_DIGITS_ALL
@@ -160,8 +168,9 @@ static void set_display_from_double(
         else
         {
             /* 0.0 - 9.9 */
+            value = roundf(value * 100.0);
             set_display_from_int(
-                value * 10.0,
+                (uint16_t)(value),
                 pos,
                 SEVEN_SEG_DP_MIDDLE,
                 SEVEN_SEG_DIGITS_MIDDLE | SEVEN_SEG_DIGITS_RIGHTMOST
@@ -236,13 +245,18 @@ void main()
     if (read_programming_pin() == 0)
     {
         /* wait until the user stops removes the jumper on the programming pin */
-        //while(!read_programming_pin());
-
+        while(!read_programming_pin());
         /* execute the calibration routine */
-        //do_calibration();
+        do_calibration();
         /* Calibration done, continue */
     }
-
+    else{
+#if !defined(SWIM_DEBUG_ENABLED) || defined(NDEBUG)
+      //swim disable
+      swim_set_as_gpio();
+#endif
+    }
+    
     /* Set the outputs (except the programming input pin) */
     setup_gpios();
 
@@ -259,7 +273,7 @@ void main()
     //
     while (1)
     {
-        do_measure();
-        delay(20000);
+      wait_adc_newsets();  
+      do_measure();
     }
 }
