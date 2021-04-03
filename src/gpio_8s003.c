@@ -1,6 +1,5 @@
 #include "config.h"
 #include "gpio.h"
-#include "hardware_pin.h"
 #include "display_7seg.h"
 
 

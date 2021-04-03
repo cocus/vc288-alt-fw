@@ -28,8 +28,8 @@ ISR(ADC1_EOC_IRQHandler, ITC_IRQ_ADC1)
   uint16_t temp16;
   uint8_t templ;
 #if !defined(VAR_ADC_SCAN)
-  templ =  ADC_DRL;
-  temp16 = ((uint16_t)ADC_DRH)<<8 | templ;
+  templ =  ADC_DRH;
+  temp16 = ((uint16_t)templ)<<8 | ADC_DRL;
   // Reset the EOC flag, otherwise it will fire again straight away.
   CLRBIT(ADC_CSR, ADC_CSR_EOC);
   if((ADC_CSR & ADC_CSR_CH2)==0){
@@ -56,11 +56,11 @@ ISR(ADC1_EOC_IRQHandler, ITC_IRQ_ADC1)
     }
   }
 #else
-  templ= ADC_DB3RL;
-  temp16= ((uint16_t)ADC_DB3RH << 8) | templ;
+  templ= ADC_DB3RH;
+  temp16= ((uint16_t)templ << 8) | ADC_DB3RL;
   adc_ch3_avg += temp16;
-  templ= ADC_DB4RL;
-  temp16= ((uint16_t)ADC_DB4RH << 8) | templ;
+  templ= ADC_DB4RH;
+  temp16= ((uint16_t)templ << 8) | ADC_DB4RL;
   adc_ch4_avg += temp16;
   // Reset the EOC flag, otherwise it will fire again straight away.
   CLRBIT(ADC_CSR, ADC_CSR_EOC);

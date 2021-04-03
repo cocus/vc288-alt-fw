@@ -1644,9 +1644,6 @@
             <name>$PROJ_DIR$\..\src\gpio_8s003.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\src\hardware_pin.h</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\..\src\main.c</name>
         </file>
         <file>
