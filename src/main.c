@@ -200,8 +200,8 @@ static void set_display_from_double(
         else
         {
             /* 0.0 - 9.9 */
-            value = roundf(value * 100.0);
-            if(value<1000.0)
+            value = roundf(value * 10.0);
+            if(value<100.0)
                 set_display_from_int(
                     (uint16_t)(value),
                     pos,
@@ -210,7 +210,7 @@ static void set_display_from_double(
                 );
             else
                 set_display_from_int(
-                    (uint16_t)(value/10.0),
+                    (uint16_t)(value),
                     pos,
                     SEVEN_SEG_DP_MIDDLE,
                     SEVEN_SEG_DIGITS_ALL
