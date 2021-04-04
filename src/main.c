@@ -89,7 +89,7 @@ static void set_display_from_double(
         else if (value >= 100.0)
         {
             /* 100. - 999. */
-            //value = roundf(value);
+            value = roundf(value);
             set_display_from_int(
                 (uint16_t)(value),
                 pos,
@@ -100,38 +100,59 @@ static void set_display_from_double(
         else if (value >= 10.0)
         {
             /* 10.0 - 99.9 */
-            //value = roundf(value * 10.0);
-            value = value * 10.0;
-            set_display_from_int(
-                (uint16_t)(value),
-                pos,
-                SEVEN_SEG_DP_MIDDLE,
-                SEVEN_SEG_DIGITS_ALL
-            );
+            value = roundf(value * 10.0);
+            if(value<1000.0)
+                set_display_from_int(
+                    (uint16_t)(value),
+                    pos,
+                    SEVEN_SEG_DP_MIDDLE,
+                    SEVEN_SEG_DIGITS_ALL
+                );
+            else
+                set_display_from_int(
+                    (uint16_t)(value/10.0),
+                    pos,
+                    SEVEN_SEG_DP_RIGHTMOST,
+                    SEVEN_SEG_DIGITS_ALL
+                );
         }
         else if (value >= 1.0)
         {
             /* 1.00 - 9.99 */
-            //value = roundf(value * 100.0);
-            value = value * 100.0;
-            set_display_from_int(
-                (uint16_t)(value),
-                pos,
-                SEVEN_SEG_DP_LEFTMOST,
-                SEVEN_SEG_DIGITS_ALL
-            );
+            value = roundf(value * 100.0);
+            if(value<1000.0)
+                set_display_from_int(
+                    (uint16_t)(value),
+                    pos,
+                    SEVEN_SEG_DP_LEFTMOST,
+                    SEVEN_SEG_DIGITS_ALL
+                );
+            else
+                set_display_from_int(
+                    (uint16_t)(value/10.0),
+                    pos,
+                    SEVEN_SEG_DP_MIDDLE,
+                    SEVEN_SEG_DIGITS_ALL
+                );
         }
         else
         {
             /* .000 - .999 */
-            //value = roundf(value * 1000.0);
-            value = value * 1000.0;
-            set_display_from_int(
-                (uint16_t)(value),
-                pos,
-                SEVEN_SEG_DP_NONE,
-                SEVEN_SEG_DIGITS_ALL
-            );
+            value = roundf(value * 1000.0);
+            if(value<1000.0)
+                set_display_from_int(
+                    (uint16_t)(value),
+                    pos,
+                    SEVEN_SEG_DP_NONE,
+                    SEVEN_SEG_DIGITS_ALL
+                );
+            else
+                set_display_from_int(
+                    (uint16_t)(value/10.0),
+                    pos,
+                    SEVEN_SEG_DP_LEFTMOST,
+                    SEVEN_SEG_DIGITS_ALL
+                );
         }
     }
     else
@@ -149,7 +170,7 @@ static void set_display_from_double(
         else if (value >= 100.0)
         {
             /* 100. - 999. */
-            //value = roundf(value);
+            value = roundf(value);
             set_display_from_int(
                 (uint16_t)(value),
                 pos,
@@ -160,26 +181,40 @@ static void set_display_from_double(
         else if (value >= 10.0)
         {
             /* 10.0 - 99.9 */
-            //value = roundf(value * 10.0);
-            value = value * 10.0;
-            set_display_from_int(
-                (uint16_t)(value),
-                pos,
-                SEVEN_SEG_DP_MIDDLE,
-                SEVEN_SEG_DIGITS_ALL
-            );
+            value = roundf(value * 10.0);
+            if(value<1000.0)
+                set_display_from_int(
+                    (uint16_t)(value),
+                    pos,
+                    SEVEN_SEG_DP_MIDDLE,
+                    SEVEN_SEG_DIGITS_ALL
+                );
+            else
+                set_display_from_int(
+                    (uint16_t)(value/10.0),
+                    pos,
+                    SEVEN_SEG_DP_RIGHTMOST,
+                    SEVEN_SEG_DIGITS_ALL
+                );
         }
         else
         {
             /* 0.0 - 9.9 */
-            //value = roundf(value * 100.0);
-            value = value * 100.0;
-            set_display_from_int(
-                (uint16_t)(value),
-                pos,
-                SEVEN_SEG_DP_MIDDLE,
-                SEVEN_SEG_DIGITS_MIDDLE | SEVEN_SEG_DIGITS_RIGHTMOST
-            );
+            value = roundf(value * 100.0);
+            if(value<1000.0)
+                set_display_from_int(
+                    (uint16_t)(value),
+                    pos,
+                    SEVEN_SEG_DP_MIDDLE,
+                    SEVEN_SEG_DIGITS_MIDDLE | SEVEN_SEG_DIGITS_RIGHTMOST
+                );
+            else
+                set_display_from_int(
+                    (uint16_t)(value/10.0),
+                    pos,
+                    SEVEN_SEG_DP_MIDDLE,
+                    SEVEN_SEG_DIGITS_ALL
+                );
         }
     }
 }
