@@ -246,7 +246,7 @@ static void do_measure(void)
     if (value < 0) { value = 0; }
     /* Scale */
     value *= settings->adc_amps.scaling;
-#ifdef VOLTS_DISPLAY_ALIGN_LEFT
+#ifdef AMPS_DISPLAY_ALIGN_LEFT
     set_display_from_double(value, SEVEN_SEG_SECOND_ROW, DISPLAY_ALIGN_LEFT);
 #else
     set_display_from_double(value, SEVEN_SEG_SECOND_ROW, DISPLAY_ALIGN_RIGHT);

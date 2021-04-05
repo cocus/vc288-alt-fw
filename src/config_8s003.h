@@ -83,6 +83,7 @@
 #define VOLTS_R1                        8200.0
 #elif defined(BOARD_HW_V3)
 #define VOLTS_R1                        2200.0
+//#define VOLTS_R1                        4700.0 /*V max 52 volts*/
 #else
 #error defined BOARD_HW_V?
 #endif

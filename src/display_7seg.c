@@ -52,14 +52,12 @@ void set_display_from_int(uint16_t number,
                           uint8_t digits)
 {
     // Note: 8th bit controls the decimal place dot
-    display_data[row+2] = (digits & 1 ? seven_seg_lut[number % 10] : 0) |
-                          (decimal_dots & 1 ? SEG_MASK_DP : 0);
+    display_data[row+2] = (digits & SEVEN_SEG_DIGITS_RIGHTMOST ? seven_seg_lut[number % 10] : 0) |
+                          (decimal_dots & SEVEN_SEG_DP_RIGHTMOST ? SEG_MASK_DP : 0);
     number /= 10;
-    decimal_dots >>= 1;
-    display_data[row+1] = (digits & 1 ? seven_seg_lut[number % 10] : 0) |
-                          (decimal_dots & 1 ? SEG_MASK_DP : 0);
+    display_data[row+1] = (digits & SEVEN_SEG_DIGITS_MIDDLE ? seven_seg_lut[number % 10] : 0) |
+                          (decimal_dots & SEVEN_SEG_DP_MIDDLE ? SEG_MASK_DP : 0);
     number /= 10;
-    decimal_dots >>= 1;
-    display_data[row+0] = (digits & 1 ? seven_seg_lut[number % 10] : 0) |
-                          (decimal_dots & 1 ? SEG_MASK_DP : 0);
+    display_data[row+0] = (digits & SEVEN_SEG_DIGITS_LEFTMOST ? seven_seg_lut[number % 10] : 0) |
+                          (decimal_dots & SEVEN_SEG_DP_LEFTMOST ? SEG_MASK_DP : 0);
 }
