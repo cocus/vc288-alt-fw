@@ -282,10 +282,10 @@ void main()
      */
     programming_pin_control(1);
 
-    if (read_programming_pin() == 0)
+    if (read_programming_pin() == 0 && read_programming_pin() == 0 && read_programming_pin() == 0)
     {
         /* wait until the user stops removes the jumper on the programming pin */
-        while(!read_programming_pin());
+        while(!read_programming_pin()||!read_programming_pin()||!read_programming_pin());
         /* execute the calibration routine */
         do_calibration();
         /* Calibration done, continue */

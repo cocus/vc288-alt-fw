@@ -9,10 +9,18 @@
 //#define SWIM_DEBUG_ENABLED
 
 /**
+ * Measured network frequency
+ * Частота измеряемой сети
+ */
+#define FREQ_AVERAGE_NETWORK    50 /*Hz*/
+
+/**
  * Defines how many samples are going to be averaged.
  * Note: the resulting number of samples is 2^ADC_AVERAGE_SAMPLES_BASE_2
+*        Number of averaging measurement points per period for calculating the root-mean-square value
+*        Количество точек измерения усреднения за период для вычисления средне квадратичного значения
  */
-#define ADC_AVERAGE_SAMPLES_BASE_2      5
+#define ADC_AVERAGE_SAMPLES_BASE_2      7
 
 /**
  * Set to float or double, depending on compiler availability
