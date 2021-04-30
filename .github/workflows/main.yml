@@ -1,6 +1,10 @@
 name: PlatformIO CI
 
-on: [push]
+on:
+  push:
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
@@ -31,8 +35,8 @@ jobs:
       run: pio run
     - uses: actions/upload-artifact@v2
       with:
-        name: debug_firmware.ihx
-        path: .pio/build/stm8sblue_debug/firmware.ihx
+        name: debug_firmware.hex
+        path: .pio/build/stm8sblue_debug/firmware.hex
         if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
@@ -41,8 +45,8 @@ jobs:
         if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
-        name: release_firmware.ihx
-        path: .pio/build/stm8sblue_release/firmware.ihx
+        name: release_firmware.hex
+        path: .pio/build/stm8sblue_release/firmware.hex
         if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
