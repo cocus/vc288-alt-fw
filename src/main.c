@@ -68,6 +68,11 @@ static void do_calibration(void)
     __disable_interrupt();
 }
 
+#ifndef roundf
+// SDCC doesn't have this function by default, so we're ignoring it for now.
+#define roundf(x) x
+#endif
+
 static void set_display_from_double(
   HIGH_RES_FLOAT value,
   const uint8_t pos,
