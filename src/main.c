@@ -106,34 +106,58 @@ static void set_display_from_double(
         {
             /* 10.0 - 99.9 */
             value = roundf(value * 10.0);
-            set_display_from_int(
-                (uint16_t)(value),
-                pos,
-                SEVEN_SEG_DP_MIDDLE,
-                SEVEN_SEG_DIGITS_ALL
-            );
+            if(value<1000.0)
+                set_display_from_int(
+                    (uint16_t)(value),
+                    pos,
+                    SEVEN_SEG_DP_MIDDLE,
+                    SEVEN_SEG_DIGITS_ALL
+                );
+            else
+                set_display_from_int(
+                    (uint16_t)(value/10.0),
+                    pos,
+                    SEVEN_SEG_DP_RIGHTMOST,
+                    SEVEN_SEG_DIGITS_ALL
+                );
         }
         else if (value >= 1.0)
         {
             /* 1.00 - 9.99 */
             value = roundf(value * 100.0);
-            set_display_from_int(
-                (uint16_t)(value),
-                pos,
-                SEVEN_SEG_DP_LEFTMOST,
-                SEVEN_SEG_DIGITS_ALL
-            );
+            if(value<1000.0)
+                set_display_from_int(
+                    (uint16_t)(value),
+                    pos,
+                    SEVEN_SEG_DP_LEFTMOST,
+                    SEVEN_SEG_DIGITS_ALL
+                );
+            else
+                set_display_from_int(
+                    (uint16_t)(value/10.0),
+                    pos,
+                    SEVEN_SEG_DP_MIDDLE,
+                    SEVEN_SEG_DIGITS_ALL
+                );
         }
         else
         {
             /* .000 - .999 */
             value = roundf(value * 1000.0);
-            set_display_from_int(
-                (uint16_t)(value),
-                pos,
-                SEVEN_SEG_DP_NONE,
-                SEVEN_SEG_DIGITS_ALL
-            );
+            if(value<1000.0)
+                set_display_from_int(
+                    (uint16_t)(value),
+                    pos,
+                    SEVEN_SEG_DP_NONE,
+                    SEVEN_SEG_DIGITS_ALL
+                );
+            else
+                set_display_from_int(
+                    (uint16_t)(value/10.0),
+                    pos,
+                    SEVEN_SEG_DP_LEFTMOST,
+                    SEVEN_SEG_DIGITS_ALL
+                );
         }
     }
     else
@@ -163,23 +187,39 @@ static void set_display_from_double(
         {
             /* 10.0 - 99.9 */
             value = roundf(value * 10.0);
-            set_display_from_int(
-                (uint16_t)(value),
-                pos,
-                SEVEN_SEG_DP_MIDDLE,
-                SEVEN_SEG_DIGITS_ALL
-            );
+            if(value<1000.0)
+                set_display_from_int(
+                    (uint16_t)(value),
+                    pos,
+                    SEVEN_SEG_DP_MIDDLE,
+                    SEVEN_SEG_DIGITS_ALL
+                );
+            else
+                set_display_from_int(
+                    (uint16_t)(value/10.0),
+                    pos,
+                    SEVEN_SEG_DP_RIGHTMOST,
+                    SEVEN_SEG_DIGITS_ALL
+                );
         }
         else
         {
             /* 0.0 - 9.9 */
-            value = roundf(value * 100.0);
-            set_display_from_int(
-                (uint16_t)(value),
-                pos,
-                SEVEN_SEG_DP_MIDDLE,
-                SEVEN_SEG_DIGITS_MIDDLE | SEVEN_SEG_DIGITS_RIGHTMOST
-            );
+            value = roundf(value * 10.0);
+            if(value<100.0)
+                set_display_from_int(
+                    (uint16_t)(value),
+                    pos,
+                    SEVEN_SEG_DP_MIDDLE,
+                    SEVEN_SEG_DIGITS_MIDDLE | SEVEN_SEG_DIGITS_RIGHTMOST
+                );
+            else
+                set_display_from_int(
+                    (uint16_t)(value),
+                    pos,
+                    SEVEN_SEG_DP_MIDDLE,
+                    SEVEN_SEG_DIGITS_ALL
+                );
         }
     }
 }
@@ -211,7 +251,7 @@ static void do_measure(void)
     if (value < 0) { value = 0; }
     /* Scale */
     value *= settings->adc_amps.scaling;
-#ifdef VOLTS_DISPLAY_ALIGN_LEFT
+#ifdef AMPS_DISPLAY_ALIGN_LEFT
     set_display_from_double(value, SEVEN_SEG_SECOND_ROW, DISPLAY_ALIGN_LEFT);
 #else
     set_display_from_double(value, SEVEN_SEG_SECOND_ROW, DISPLAY_ALIGN_RIGHT);
@@ -247,10 +287,10 @@ void main()
      */
     programming_pin_control(1);
 
-    if (read_programming_pin() == 0)
+    if (read_programming_pin() == 0 && read_programming_pin() == 0 && read_programming_pin() == 0)
     {
         /* wait until the user stops removes the jumper on the programming pin */
-        while(!read_programming_pin());
+        while(!read_programming_pin()||!read_programming_pin()||!read_programming_pin());
         /* execute the calibration routine */
         do_calibration();
         /* Calibration done, continue */

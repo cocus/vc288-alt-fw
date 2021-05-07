@@ -1,6 +1,10 @@
 #ifndef _STH8_H
 #define _STH8_H
 
+/* Handy macros for REG */
+#define CONCATVAR(a, b)    a####b
+#define REGVAR(a, b)      CONCATVAR(a , b)
+
 /* Handy macros for GPIO */
 #define CONCAT(a, b)    a##_##b
 #define PORT(a, b)      CONCAT(a , b)

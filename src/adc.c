@@ -2,7 +2,50 @@
 #include "adc.h"
 #include <stdint.h>
 
-#define VAR_ADC_SCAN
+//#define VAR_ADC_SCAN
+
+#define ADC_DB(n,ml)   REGVAR(REGVAR(ADC_DB,n), ml);
+#define ADC_DB_VOLTS_RL ADC_DB(CANELADC_VOLTS,_RL)
+#define ADC_DB_VOLTS_RH ADC_DB(CANELADC_VOLTS,_RH)
+
+#if CANELADC_AMPS < CANELADC_VOLTS
+  #define CANELADC_HIGH   CANELADC_VOLTS
+#else
+  #define CANELADC_HIGH   CANELADC_AMPS
+#endif
+
+#define FREQ_ADC_SAMPLING  ((FREQ_AVERAGE_NETWORK*2)*(1<<ADC_AVERAGE_SAMPLES_BASE_2))
+
+//ADC_AVERAGE_SAMPLES_BASE_2      5
+#ifdef VAR_ADC_SCAN
+#if FREQ_ADC_SAMPLING < 7200
+//FREQ_AVERAGE_NETWORK    112 
+#define ADC_PRESCALE_DEF (ADC_CR1_SPSEL2) // |> Prescaler = fmaster/8.
+#elif FREQ_ADC_SAMPLING < 9600
+//FREQ_AVERAGE_NETWORK    150 
+#define ADC_PRESCALE_DEF (ADC_CR1_SPSEL0|ADC_CR1_SPSEL1) // |> Prescaler = fmaster/6.
+#elif FREQ_ADC_SAMPLING < 28800
+//FREQ_AVERAGE_NETWORK    450 
+#define ADC_PRESCALE_DEF (ADC_CR1_SPSEL1) // |> Prescaler = fmaster/4.
+#else
+#error FREQ_ADC_SAMPLING  >  30719 
+#endif
+#else
+#if FREQ_ADC_SAMPLING < 16384
+//FREQ_AVERAGE_NETWORK    255 
+#define ADC_PRESCALE_DEF (ADC_CR1_SPSEL2) // |> Prescaler = fmaster/8.
+#elif FREQ_ADC_SAMPLING < 21845
+//FREQ_AVERAGE_NETWORK    341 
+#define ADC_PRESCALE_DEF (ADC_CR1_SPSEL0|ADC_CR1_SPSEL1) // |> Prescaler = fmaster/6.
+#elif FREQ_ADC_SAMPLING < 32768
+//FREQ_AVERAGE_NETWORK    510 
+#define ADC_PRESCALE_DEF (ADC_CR1_SPSEL1) // |> Prescaler = fmaster/4.
+#else
+#error FREQ_ADC_SAMPLING  >  32767 
+#endif
+#endif
+
+
 
 static volatile uint16_t adc_meas_cnt   = 0;
 static volatile uint32_t adc_ch3_avg    = 0;
@@ -32,18 +75,18 @@ ISR(ADC1_EOC_IRQHandler, ITC_IRQ_ADC1)
   temp16 = ((uint16_t)templ)<<8 | ADC_DRL;
   // Reset the EOC flag, otherwise it will fire again straight away.
   CLRBIT(ADC_CSR, ADC_CSR_EOC);
-  if((ADC_CSR & ADC_CSR_CH2)==0){
+  if((ADC_CSR & 0x0F) == CANELADC_AMPS){
     adc_ch3_avg += temp16;
-    CLRBIT(ADC_CSR, ADC_CSR_CH0);   // -
-    CLRBIT(ADC_CSR, ADC_CSR_CH1);   // |> ADC samples AIN4 only.
-    SETBIT(ADC_CSR, ADC_CSR_CH2);   // |
+    
+    ADC_CSR = (ADC_CSR & 0xF0) | CANELADC_VOLTS;
+    
     SETBIT(ADC_CR1, ADC_CR1_ADON);
   }
   else{
     adc_ch4_avg += temp16;
-    SETBIT(ADC_CSR, ADC_CSR_CH0);   // -
-    SETBIT(ADC_CSR, ADC_CSR_CH1);   // |> ADC samples AIN3 only.
-    CLRBIT(ADC_CSR, ADC_CSR_CH2);   // |
+    
+    ADC_CSR = (ADC_CSR & 0xF0) | CANELADC_AMPS;
+    
     if (adc_meas_cnt++ == (1 << ADC_AVERAGE_SAMPLES_BASE_2))
     {
         adc_ch3 = adc_ch3_avg >> ADC_AVERAGE_SAMPLES_BASE_2;
@@ -56,11 +99,11 @@ ISR(ADC1_EOC_IRQHandler, ITC_IRQ_ADC1)
     }
   }
 #else
-  templ= ADC_DB3RH;
-  temp16= ((uint16_t)templ << 8) | ADC_DB3RL;
+  templ= ADC_DB(CANELADC_AMPS,RH);
+  temp16= ((uint16_t)templ << 8) | ADC_DB(CANELADC_AMPS,RL);
   adc_ch3_avg += temp16;
-  templ= ADC_DB4RH;
-  temp16= ((uint16_t)templ << 8) | ADC_DB4RL;
+  templ= ADC_DB(CANELADC_VOLTS,RH);
+  temp16= ((uint16_t)templ << 8) | ADC_DB(CANELADC_VOLTS,RL);
   adc_ch4_avg += temp16;
   // Reset the EOC flag, otherwise it will fire again straight away.
   CLRBIT(ADC_CSR, ADC_CSR_EOC);
@@ -94,16 +137,9 @@ void setup_adc(void)
     //SETBIT(ADC_CR1, ADC_CR1_ADON);
     CLRBIT(ADC_CR1, ADC_CR1_ADON);
 
-    SETBIT(ADC_CSR, ADC_CSR_CH0);   // -
-    SETBIT(ADC_CSR, ADC_CSR_CH1);   // |> ADC samples AIN3 only.
-    CLRBIT(ADC_CSR, ADC_CSR_CH2);   // |
-    CLRBIT(ADC_CSR, ADC_CSR_CH3);   // |
+    ADC_CSR = (ADC_CSR & 0xF0) | CANELADC_AMPS | ADC_CSR_EOCIE;
 
-    SETBIT(ADC_CSR, ADC_CSR_EOCIE);     //  Enable the interrupt after conversion completed.
-
-    CLRBIT(ADC_CR1, ADC_CR1_SPSEL0);    // -
-    CLRBIT(ADC_CR1, ADC_CR1_SPSEL1);    // |> Prescaler = fmaster/8.
-    SETBIT(ADC_CR1, ADC_CR1_SPSEL2);    // -
+    ADC_CR1 = (ADC_CR1 & ~(ADC_CR1_SPSEL0|ADC_CR1_SPSEL1|ADC_CR1_SPSEL2)) | ADC_PRESCALE_DEF; //Prescaler = fmaster/ADC_PRESCALE_DEF.
     //CLRBIT(ADC_CR1, ADC_CR1_CONT);    // -
 
 
@@ -118,16 +154,10 @@ void setup_adc(void)
     //SETBIT(ADC_CR1, ADC_CR1_ADON);
     CLRBIT(ADC_CR1, ADC_CR1_ADON);
 
-    CLRBIT(ADC_CSR, ADC_CSR_CH0);   // -
-    CLRBIT(ADC_CSR, ADC_CSR_CH1);   // |> ADC samples AIN4 only.
-    SETBIT(ADC_CSR, ADC_CSR_CH2);   // |
-    CLRBIT(ADC_CSR, ADC_CSR_CH3);   // |
+    ADC_CSR = (ADC_CSR & 0xF0) | CANELADC_HIGH | ADC_CSR_EOCIE;
 
-    SETBIT(ADC_CSR, ADC_CSR_EOCIE);     //  Enable the interrupt after conversion completed.
+    ADC_CR1 = (ADC_CR1 & ~(ADC_CR1_SPSEL0|ADC_CR1_SPSEL1|ADC_CR1_SPSEL2)) | ADC_PRESCALE_DEF; //Prescaler = fmaster/ADC_PRESCALE_DEF.
 
-    CLRBIT(ADC_CR1, ADC_CR1_SPSEL0);    // -
-    CLRBIT(ADC_CR1, ADC_CR1_SPSEL1);    // |> Prescaler = fmaster/8.
-    SETBIT(ADC_CR1, ADC_CR1_SPSEL2);    // -
     //CLRBIT(ADC_CR1, ADC_CR1_CONT);    // -
 
     SETBIT(ADC_CR3, ADC_CR3_DBUF);      ///< When DBUF is set, converted values are stored in the ADC_DBxRH and ADC_DBxRL registers instead of the ADC_DRH and ADC_DRL registers.
@@ -140,8 +170,8 @@ void setup_adc(void)
    
     /*------------------TDR configuration ---------------------------*/
     ADC_TDRH = 0x00;
-    ADC_TDRL = (1<<4)|(1<<3);
-
+    ADC_TDRL = (1<<CANELADC_AMPS)|(1<<CANELADC_VOLTS);
+    
     SETBIT(ADC_CR1, ADC_CR1_ADON);
 }
 
