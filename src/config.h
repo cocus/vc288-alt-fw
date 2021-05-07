@@ -12,7 +12,7 @@
  * Measured network frequency
  * Частота измеряемой сети
  */
-#define FREQ_AVERAGE_NETWORK    50 /*Hz*/
+#define FREQ_AVERAGE_NETWORK    2 /*Hz */ 
 
 /**
  * Defines how many samples are going to be averaged.
@@ -20,7 +20,7 @@
 *        Number of averaging measurement points per period for calculating the root-mean-square value
 *        Количество точек измерения усреднения за период для вычисления средне квадратичного значения
  */
-#define ADC_AVERAGE_SAMPLES_BASE_2      7
+#define ADC_AVERAGE_SAMPLES_BASE_2      12
 
 /**
  * Set to float or double, depending on compiler availability
